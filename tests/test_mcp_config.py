@@ -56,4 +56,3 @@ def test_local_agent_opener_ignores_environment_proxies(monkeypatch):
     assert proxy_handlers[0].proxies == {}
     assert any(isinstance(handler, HTTPRedirectHandler) for handler in captured_handlers)
     assert opener is not None
-}
