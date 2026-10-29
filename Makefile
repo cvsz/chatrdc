@@ -1,16 +1,31 @@
 SHELL := /bin/sh
+PYTHON ?= python3
 
-.PHONY: help validate-template setup format lint test build security ci
+.PHONY: help setup format lint test build security ci validate-template
 
 help:
-	@printf '%s\n' 'Template: validate-template' 'Project (configure before use): setup format lint test build security ci' 'Bootstrap: python3 scripts/bootstrap.py --help'
+	@printf '%s\n' 'setup lint format test build security ci validate-template'
+
+setup:
+	$(PYTHON) -m pip install -e ".[dev]"
+
+format:
+	$(PYTHON) -m ruff format .
+
+lint:
+	$(PYTHON) -m ruff check .
+
+test:
+	$(PYTHON) -m pytest -q
+
+build:
+	$(PYTHON) -m build
+
+security:
+	$(PYTHON) -m pip_audit
 
 validate-template:
-	python3 scripts/validate_repo.py
-	python3 -m unittest discover -s tests -v
-
-setup format lint test build security:
-	@echo 'This is a template placeholder: implement this target for your actual project; do not treat it as a passing check.' >&2
-	@exit 2
+	$(PYTHON) scripts/validate_repo.py
+	$(PYTHON) -m unittest discover -s tests -v
 
 ci: validate-template lint test build security
