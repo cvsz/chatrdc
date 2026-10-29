@@ -7,7 +7,7 @@ import json
 import os
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from mcp.server import MCPServer
 
@@ -50,12 +50,17 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
+def _build_local_opener():
+    """Ignore ambient proxy variables for the loopback-only agent connection."""
+    return build_opener(ProxyHandler({}), _NoRedirect)
+
+
 def _get_json(path: str) -> dict:
     if path not in {"/health", "/api/v1/system"}:
         raise ValueError("Unsupported agent path")
     req = Request(f"{AGENT_URL}{path}", headers={"Accept": "application/json"})
     try:
-        with build_opener(_NoRedirect).open(req, timeout=3.0) as response:
+        with _build_local_opener().open(req, timeout=3.0) as response:
             if response.status != 200:
                 raise RuntimeError("Agent returned an unexpected status")
             data = json.loads(response.read(256_000).decode("utf-8"))
