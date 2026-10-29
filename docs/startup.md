@@ -1,108 +1,97 @@
-# Start a project from ztemplate
+# chatrdc Startup Guide
 
-This repository is a language-agnostic governance/tooling baseline, not a deployable product.
+This repository has been initialized as the chatrdc product, using the existing governance/tooling baseline without copying over or weakening its controls. Follow these steps for local development and controlled rollout.
 
-Use GitHub **Use this template** when independent history is desired, clone the generated repository, and work through a feature branch.
+## 1. Confirm project identity and branch
 
-## 1. Initialize project identity
+- Repository: [cvsz/chatrdc](https://github.com/cvsz/chatrdc)
+- Default branch: `main`
+- Work on a feature branch and open a pull request.
+- Review README.md, ABOUT.md, AGENTS.md, SECURITY.md, CONTRIBUTING.md, ROADMAP.md, and the current branch/head before changing code.
+- The template's `scripts/bootstrap.py` is intended for initializing generated repositories. Do not run it against an already initialized product without first reviewing its preview and expected diffs.
 
-Requires Python 3.10+ and Git.
-
-Preview:
-
-```bash
-python3 scripts/bootstrap.py --name my-service --owner my-org --codeowner my-org/maintainers --description 'Describe the product'
-```
-
-Apply:
-
-```bash
-python3 scripts/bootstrap.py --name my-service --owner my-org --codeowner my-org/maintainers --description 'Describe the product' --apply
-```
-
-Review `git diff` and commit the generated identity marker only after confirming the resulting project metadata and ownership.
-
-## 2. Validate the inherited baseline
+## 2. Validate the repository baseline
 
 ```bash
 make validate-template
 ```
 
-This validates repository structure, local Markdown links, and bootstrap behavior. Application-specific Makefile targets intentionally fail until replaced.
+This validates required repository structure, local Markdown links, and baseline tests. Application checks are defined separately in the Makefile and CI workflow.
 
 ## 3. Configure repository administration
 
-The inherited script is dry-run by default:
+The helper is dry-run by default:
 
 ```bash
-python3 scripts/github_admin.py --repo my-org/my-service
+python3 scripts/github_admin.py --repo cvsz/chatrdc
 ```
 
-Apply and read back effective settings:
+Applying repository settings requires explicit authority and an authenticated GitHub identity with Administration permission:
 
 ```bash
-python3 scripts/github_admin.py --repo my-org/my-service --apply
+python3 scripts/github_admin.py --repo cvsz/chatrdc --apply
+python3 scripts/github_admin.py --repo cvsz/chatrdc --verify
 ```
 
-Later verification:
+Do not treat the presence of the helper or committed policy files as proof that provider-side controls are active. Verify effective settings by read-back. This project branch does not itself establish that repository settings have been changed or verified.
+
+## 4. Set up local development
+
+Requires Python 3.11+ and Git.
 
 ```bash
-python3 scripts/github_admin.py --repo my-org/my-service --verify
+python -m venv .venv
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+# Linux/WSL2
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+make setup
 ```
 
-This step requires an authenticated `gh` identity with repository Administration permission.
+Run the local agent:
 
-Do not treat the presence of the script as proof that branch/security settings are enabled.
+```bash
+python -m agent
+```
 
-## 4. Make project-specific decisions
+Open `http://127.0.0.1:8765/`. In a second terminal, run the stdio MCP server:
 
-- choose language/runtime/framework/package manager and supported versions
-- review licensing and attribution
-- replace the placeholder Dockerfile and Makefile application commands
-- set real maintainers/CODEOWNERS
-- replace the generic security support policy
-- define authentication/authorization and data-retention requirements
-- define secrets, environments, release policy, and deployment protections
-- add stack-specific CI/security checks
-- choose backup/recovery/rollback requirements
-- define observability and incident ownership
+```bash
+python -m mcp_server.server
+```
 
-See [profiles](profiles.md) and the [implementation checklist](../IMPLEMENTATION-CHECKLIST.md).
+The MCP server expects the agent at `http://127.0.0.1:8765`. The current API is read-only and local-only.
 
-## 5. Development baseline
+## 5. Run the project checks
 
-Copy `.env.example` to a local ignored `.env`. Add real code, tests, build tooling, security checks, and deterministic dependency installation.
+```bash
+make lint
+make test
+make build
+make security
+make ci
+```
 
-Do not remove inherited security checks merely to simplify CI.
+Do not remove inherited repository validation, CodeQL, Dependency Review, Dependabot, or other security checks to simplify CI. CI evidence is only valid for the exact commit and checks that actually ran.
 
-## 6. Operations and release evidence
+## 6. Security and connectivity gates
 
-Complete:
+LAN or Internet remote access is **not implemented and must not be enabled** until all applicable controls in [SECURITY.md](../SECURITY.md) are implemented, tested, and independently reviewed. In particular, do not expose the local agent port directly. The existence of an MCP server is not proof of ChatGPT integration.
 
-- [architecture](architecture.md)
-- [development](development.md)
-- [release](release.md)
-- [implementation checklist](../IMPLEMENTATION-CHECKLIST.md)
+## 7. Architecture, release, and operations
 
-For an application intended for production, establish environment-appropriate evidence for applicable gates such as:
+Review and keep current:
 
-- deployment verification
-- authenticated health/readiness checks
-- structured logs/metrics/traces
-- alert routing
-- backup and isolated restore
-- rollback to a known-good build
-- RPO/RTO
-- load/capacity validation
-- security response contacts
-- incident/runbook procedures
+- [Architecture](architecture.md)
+- [Development](development.md)
+- [Release and rollback](release.md)
+- [Implementation checklist](../IMPLEMENTATION-CHECKLIST.md)
+- [Cloudflare/DNS ownership contract](cloudflare-terraform.md)
 
-Green repository CI is not proof of application production readiness.
+Public DNS and shared tunnel ingress must remain in the designated infrastructure repository. Do not create duplicate DNS/tunnel ownership here.
 
-## 7. Public hostnames
+## 8. Evidence-based readiness
 
-Follow the [central Cloudflare/DNS ownership contract](cloudflare-terraform.md). Never introduce duplicate ownership of public DNS or a shared tunnel from an application repository when a designated infrastructure repository already owns it.
-
-## 8. Existing repositories
-
-When adopting this baseline into an established project, do not copy the template wholesale. Follow the [repository rollout guide](repository-rollout.md) and preserve repository-specific architecture, policy, tests, and operational contracts.
+Record Windows, Linux, and WSL2 results separately. A Linux CI run does not prove Windows acceptance. Before any production release, verify authentication/authorization, remote access, packaging/signing, observability, incident response, rollback, repository controls, and all other applicable release gates. Keep implementation, verification, deployment, and production readiness as separate states.
