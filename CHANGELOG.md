@@ -1,39 +1,26 @@
 # Changelog
 
-All notable changes to this template are documented here.
-
-The format follows Keep a Changelog conventions; generated projects should adopt an explicit versioning policy appropriate to their product.
+All notable chatrdc changes are documented here. The project has not declared a production release.
 
 ## [Unreleased]
 
 ### Added
 
-- Safe project identity bootstrap with explicit dry-run/apply and idempotence tests.
-- Generated README/ABOUT templates and startup/profile documentation.
-- CI bootstrap test coverage and fail-closed Makefile placeholders.
-- ZEAZ cross-agent engineering execution framework.
-- Claude Code and OpenCode adapters.
-- Reusable AI guides, playbooks, prompts, skills, component manifests, and plugin-source manifests.
-- ECC OSS CLI install configuration with explicit separation from hosted ECC App evidence.
-- Repository structure and local Markdown-link validator.
-- GitHub administration automation with dry-run, explicit apply, and read-back verification.
-- Repository rollout guidance for applying the baseline safely to existing repositories.
+- Local FastAPI agent with read-only health and bounded system-summary endpoints.
+- Loopback-only launcher and a local status dashboard.
+- Stdio MCP connector exposing read-only health and system-summary tools.
+- Host/Origin validation for browser-facing local requests.
+- Loopback validation for the MCP agent URL.
+- Unit tests for agent endpoints, host/origin protections, and MCP URL validation.
+- Product-specific architecture, development, startup, security, release, and readiness documentation.
 
 ### Changed
 
-- Reorganized reusable AI documentation into `guides/`, `playbooks/`, and `prompts/`.
-- Pinned baseline first-party GitHub Actions to immutable commit SHAs.
-- Expanded CODEOWNERS coverage for repository policy, AI, ECC, skills, components, and plugin manifests.
-- Clarified that release-note configuration is not an artifact-publishing workflow.
-- Documented branch/security administration as an explicit evidence gate rather than a documentation-only checklist.
-
-### Fixed
-
-- Corrected generated README link validation so template links are resolved from their generated root location.
-- Removed stale wording that could imply green CI or configuration files alone establish production readiness.
+- Initialized README and ABOUT for the chatrdc product.
+- Replaced generic Makefile placeholders with project lint, test, build, security, and CI commands.
+- Extended CI and CodeQL configuration for the Python application while retaining repository-baseline validation.
 
 ### Security
 
-- Added fail-closed repository-administration verification.
-- Added protected-branch controls for required reviews/checks, conversation resolution, force-push prevention, and deletion prevention.
-- Added documented verification for Dependabot, private vulnerability reporting, secret scanning/push protection, and least-privilege Actions permissions where supported.
+- Kept LAN and Internet ingress disabled by default.
+- Explicitly documented that device enrollment, authenticated remote access, desktop-control capabilities, signed installers, and verified ChatGPT integration are not yet implemented.
