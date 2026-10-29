@@ -179,7 +179,19 @@ def verify(repo: str, branch: str) -> list[str]:
         if private_reporting.get("enabled") is not True:
             errors.append("private vulnerability reporting is not enabled")
     except RuntimeError as exc:
-        errors.append(f"private vulnerability reporting not available: {exc}")
+        errors.append(f"private vulnerability reporting not verified: {exc}")
+
+    try:
+        gh_api("GET", f"repos/{repo}/vulnerability-alerts")
+    except RuntimeError as exc:
+        errors.append(f"Dependabot vulnerability alerts not verified: {exc}")
+
+    try:
+        fixes = gh_api("GET", f"repos/{repo}/automated-security-fixes")
+        if fixes.get("enabled") is not True:
+            errors.append("Dependabot automated security fixes are not enabled")
+    except RuntimeError as exc:
+        errors.append(f"Dependabot automated security fixes not verified: {exc}")
 
     return errors
 
