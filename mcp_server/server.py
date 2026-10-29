@@ -20,15 +20,16 @@ def _validate_agent_url(value: str) -> str:
         raise ValueError("CHATRDC_AGENT_URL must be an http loopback URL")
     if parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
         raise ValueError("CHATRDC_AGENT_URL must not include a path, query, or fragment")
+
     host = parsed.hostname.lower()
     if host != "localhost":
         try:
-            if not ipaddress.ip_address(host).is_loopback:
-                raise ValueError("CHATRDC_AGENT_URL must target loopback")
+            address = ipaddress.ip_address(host)
         except ValueError as exc:
-            if "must target loopback" in str(exc):
-                raise
             raise ValueError("CHATRDC_AGENT_URL must target loopback") from exc
+        if not address.is_loopback:
+            raise ValueError("CHATRDC_AGENT_URL must target loopback")
+
     try:
         port = parsed.port
     except ValueError as exc:
@@ -52,7 +53,7 @@ def _get_json(path: str) -> dict:
                 raise RuntimeError("Agent returned an unexpected status")
             data = json.loads(response.read(256_000).decode("utf-8"))
             if not isinstance(data, dict):
-                raise RuntimeError("Agent returned invalid data")
+                raise TypeError("Agent returned invalid data")
             return data
     except (HTTPError, URLError, TimeoutError, ValueError) as exc:
         raise RuntimeError("Local agent unavailable or returned invalid data") from exc
