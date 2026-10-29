@@ -22,7 +22,7 @@ build:
 	$(PYTHON) -m build
 
 security:
-	$(PYTHON) -m pip_audit
+	pip-audit
 
 validate-template:
 	$(PYTHON) scripts/validate_repo.py
