@@ -65,7 +65,9 @@ async def restrict_browser_origin_and_host(request: Request, call_next):
             return JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
         request_port = request.url.port
         if (
-            parsed.scheme not in {"http", "https"}
+            parsed.scheme != request.url.scheme
+            or parsed.username is not None
+            or parsed.password is not None
             or origin_host not in _ALLOWED_HOSTS
             or origin_host != host
             or (origin_port or (443 if parsed.scheme == "https" else 80))
