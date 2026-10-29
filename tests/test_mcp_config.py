@@ -1,6 +1,8 @@
+from urllib.request import ProxyHandler
+
 import pytest
 
-from mcp_server.server import _validate_agent_url
+from mcp_server.server import _build_local_opener, _validate_agent_url
 
 
 @pytest.mark.parametrize(
@@ -29,3 +31,14 @@ def test_accepts_loopback_agent_urls(url):
 def test_rejects_non_loopback_or_ambiguous_agent_urls(url):
     with pytest.raises(ValueError):
         _validate_agent_url(url)
+
+
+def test_local_agent_opener_ignores_environment_proxies(monkeypatch):
+    monkeypatch.setenv("HTTP_PROXY", "http://proxy.example:8080")
+    monkeypatch.setenv("http_proxy", "http://proxy.example:8080")
+
+    opener = _build_local_opener()
+    proxy_handlers = [handler for handler in opener.handlers if isinstance(handler, ProxyHandler)]
+
+    assert len(proxy_handlers) == 1
+    assert proxy_handlers[0].proxies == {}
