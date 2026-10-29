@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -38,3 +39,30 @@ jobs:
         shell: bash
         run: |
           ruby -e 'require "yaml"; Dir.glob(".github/**/*.{yml,yaml}").each { |f| YAML.load_file(f); puts "ok #{f}" }'
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.6.0
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package and development tools
+        run: python -m pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest -q
+
+      - name: Build
+        run: python -m build
+
+      - name: Dependency audit
+        run: pip-audit
