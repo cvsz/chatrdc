@@ -40,3 +40,13 @@ def test_rejects_cross_origin_browser_request():
         headers={"origin": "http://attacker.example"},
     )
     assert response.status_code == 403
+
+
+def test_rejects_origin_with_mismatched_scheme():
+    response = client.get("/health", headers={"origin": "https://127.0.0.1:80"})
+    assert response.status_code == 403
+
+
+def test_rejects_origin_with_userinfo():
+    response = client.get("/health", headers={"origin": "http://user@127.0.0.1"})
+    assert response.status_code == 403
