@@ -4,13 +4,11 @@ Repository files alone cannot enforce GitHub branch protection or repository-lev
 
 ## Automated operator path
 
-The repository includes an idempotent helper:
+The helper defaults to `cvsz/chatrdc` and is dry-run only unless explicitly applied:
 
 ```bash
 python3 scripts/github_admin.py
 ```
-
-The default invocation is dry-run only.
 
 Apply and immediately verify:
 
@@ -30,7 +28,7 @@ Requirements:
 - `gh auth login`
 - repository Administration permission
 
-## Enforced policy
+## Intended protected-branch policy
 
 The helper configures `main` to require:
 
@@ -42,7 +40,8 @@ The helper configures `main` to require:
 - conversation resolution;
 - strict/up-to-date required status checks;
 - `repository-baseline`;
-- `Analyze GitHub Actions`;
+- `python`;
+- `Analyze Python and GitHub Actions`;
 - `dependency-review`;
 - administrator enforcement;
 - no force pushes;
@@ -62,6 +61,6 @@ It also enables or verifies:
 
 A successful script run is operational evidence only when the final verification step reads the effective settings back from GitHub and exits successfully.
 
-Do not close the production-readiness gate from the presence of this script alone.
+This change updates the helper and policy documentation only; it does not itself apply or verify provider-side settings. Before applying required status contexts, confirm they match the checks reported by GitHub for the current workflows.
 
-If GitHub does not expose a requested security feature for the repository plan or ownership model, classify that control according to `ZEAZ-INTRODUCTION.md` rather than silently treating it as enabled.
+Do not close the production-readiness gate from the presence of this script alone. If GitHub does not expose a requested security feature for the repository plan or ownership model, classify that control according to `ZEAZ-INTRODUCTION.md` rather than silently treating it as enabled.
