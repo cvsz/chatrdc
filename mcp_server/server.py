@@ -7,7 +7,7 @@ import json
 import os
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from mcp.server.fastmcp import FastMCP
 
@@ -43,19 +43,26 @@ AGENT_URL = _validate_agent_url(os.environ.get("CHATRDC_AGENT_URL", _DEFAULT_AGE
 mcp = FastMCP("Remote Desktop Commander")
 
 
+class _NoRedirect(HTTPRedirectHandler):
+    """Do not let a local agent response redirect the MCP client off-loopback."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def _get_json(path: str) -> dict:
     if path not in {"/health", "/api/v1/system"}:
         raise ValueError("Unsupported agent path")
     req = Request(f"{AGENT_URL}{path}", headers={"Accept": "application/json"})
     try:
-        with urlopen(req, timeout=3.0) as response:
+        with build_opener(_NoRedirect).open(req, timeout=3.0) as response:
             if response.status != 200:
                 raise RuntimeError("Agent returned an unexpected status")
             data = json.loads(response.read(256_000).decode("utf-8"))
             if not isinstance(data, dict):
                 raise TypeError("Agent returned invalid data")
             return data
-    except (HTTPError, URLError, TimeoutError, ValueError) as exc:
+    except (HTTPError, URLError, TimeoutError, TypeError, ValueError) as exc:
         raise RuntimeError("Local agent unavailable or returned invalid data") from exc
 
 
