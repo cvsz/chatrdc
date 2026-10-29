@@ -9,7 +9,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 
 _DEFAULT_AGENT_URL = "http://127.0.0.1:8765"
 
@@ -40,7 +40,7 @@ def _validate_agent_url(value: str) -> str:
 
 
 AGENT_URL = _validate_agent_url(os.environ.get("CHATRDC_AGENT_URL", _DEFAULT_AGENT_URL))
-mcp = FastMCP("Remote Desktop Commander")
+mcp = MCPServer("Remote Desktop Commander")
 
 
 class _NoRedirect(HTTPRedirectHandler):
