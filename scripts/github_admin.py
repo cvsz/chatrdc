@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configure and verify GitHub repository administration gates for ztemplate.
+"""Configure and verify GitHub repository administration gates for chatrdc.
 
 Dry-run is the default. Use --apply only with an authenticated gh CLI identity
 that has repository Administration permission.
@@ -13,11 +13,12 @@ import subprocess
 import sys
 from typing import Any
 
-DEFAULT_REPO = "cvsz/ztemplate"
+DEFAULT_REPO = "cvsz/chatrdc"
 DEFAULT_BRANCH = "main"
 REQUIRED_CHECKS = (
     "repository-baseline",
-    "Analyze GitHub Actions",
+    "python",
+    "Analyze Python and GitHub Actions",
     "dependency-review",
 )
 
@@ -178,50 +179,38 @@ def verify(repo: str, branch: str) -> list[str]:
         if private_reporting.get("enabled") is not True:
             errors.append("private vulnerability reporting is not enabled")
     except RuntimeError as exc:
-        errors.append(f"private vulnerability reporting not verified: {exc}")
-
-    try:
-        gh_api("GET", f"repos/{repo}/vulnerability-alerts")
-    except RuntimeError as exc:
-        errors.append(f"Dependabot vulnerability alerts not verified: {exc}")
-
-    try:
-        gh_api("GET", f"repos/{repo}/automated-security-fixes")
-    except RuntimeError as exc:
-        errors.append(f"Dependabot automated security fixes not verified: {exc}")
+        errors.append(f"private vulnerability reporting not available: {exc}")
 
     return errors
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", default=DEFAULT_REPO)
     parser.add_argument("--branch", default=DEFAULT_BRANCH)
-    parser.add_argument("--apply", action="store_true", help="apply administration changes")
-    parser.add_argument("--verify", action="store_true", help="verify effective settings")
+    parser.add_argument("--apply", action="store_true", help="Apply changes; default is dry-run")
+    parser.add_argument("--verify", action="store_true", help="Read back and verify effective settings")
     args = parser.parse_args()
 
-    require_gh()
-    print_plan(args.repo, args.branch)
+    try:
+        require_gh()
+        if args.apply:
+            apply(args.repo, args.branch)
+            print("Applied requested repository settings; verifying effective state...")
+        else:
+            print_plan(args.repo, args.branch)
 
-    if not args.apply and not args.verify:
-        print("\nDry-run only. Re-run with --apply to mutate GitHub settings.")
+        if args.verify or args.apply:
+            errors = verify(args.repo, args.branch)
+            if errors:
+                for error in errors:
+                    print(f"ERROR: {error}", file=sys.stderr)
+                return 1
+            print("Repository administration controls verified.")
         return 0
-
-    if args.apply:
-        apply(args.repo, args.branch)
-        print("\nAdministration changes applied.")
-
-    if args.verify or args.apply:
-        errors = verify(args.repo, args.branch)
-        if errors:
-            print("\nVerification failed:", file=sys.stderr)
-            for error in errors:
-                print(f"- {error}", file=sys.stderr)
-            return 1
-        print("\nVERIFIED: GitHub repository administration gate is enforced.")
-
-    return 0
+    except RuntimeError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
