@@ -1,7 +1,9 @@
-from urllib.request import ProxyHandler
+from urllib.request import HTTPRedirectHandler, ProxyHandler
+from urllib.request import build_opener as urllib_build_opener
 
 import pytest
 
+from mcp_server import server
 from mcp_server.server import _build_local_opener, _validate_agent_url
 
 
@@ -37,8 +39,21 @@ def test_local_agent_opener_ignores_environment_proxies(monkeypatch):
     monkeypatch.setenv("HTTP_PROXY", "http://proxy.example:8080")
     monkeypatch.setenv("http_proxy", "http://proxy.example:8080")
 
-    opener = _build_local_opener()
-    proxy_handlers = [handler for handler in opener.handlers if isinstance(handler, ProxyHandler)]
+    captured_handlers = []
 
+    def recording_build_opener(*handlers):
+        captured_handlers.extend(handlers)
+        return urllib_build_opener(*handlers)
+
+    monkeypatch.setattr(server, "build_opener", recording_build_opener)
+
+    opener = _build_local_opener()
+
+    proxy_handlers = [
+        handler for handler in captured_handlers if isinstance(handler, ProxyHandler)
+    ]
     assert len(proxy_handlers) == 1
     assert proxy_handlers[0].proxies == {}
+    assert any(isinstance(handler, HTTPRedirectHandler) for handler in captured_handlers)
+    assert opener is not None
+}
