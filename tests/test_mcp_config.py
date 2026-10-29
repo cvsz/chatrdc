@@ -1,4 +1,4 @@
-from urllib.request import HTTPRedirectHandler, ProxyHandler
+from urllib.request import ProxyHandler
 from urllib.request import build_opener as urllib_build_opener
 
 import pytest
@@ -52,5 +52,5 @@ def test_local_agent_opener_ignores_environment_proxies(monkeypatch):
     proxy_handlers = [handler for handler in captured_handlers if isinstance(handler, ProxyHandler)]
     assert len(proxy_handlers) == 1
     assert proxy_handlers[0].proxies == {}
-    assert any(isinstance(handler, HTTPRedirectHandler) for handler in captured_handlers)
+    assert any(handler is server._NoRedirect for handler in captured_handlers)
     assert opener is not None
