@@ -11,6 +11,7 @@ The roadmap is evidence-driven. A checked implementation item means code/docs ex
 - [x] Read-only MCP stdio tools.
 - [x] Host/Origin validation and loopback-only MCP target validation.
 - [x] Unit tests for local endpoints and configuration validation.
+- [x] CI coverage for Python validation on Linux and Windows runners.
 - [ ] Verify lint, tests, build, dependency audit, and repository baseline on exact PR head.
 - [ ] Verify Windows 11, Linux, and WSL2 installation/behavior.
 - [ ] Verify MCP host integration end-to-end.
