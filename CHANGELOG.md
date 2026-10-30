@@ -10,6 +10,7 @@ All notable chatrdc changes are documented here. The project has not declared a 
 - Loopback-only launcher and a local status dashboard.
 - Stdio MCP connector exposing read-only health and system-summary tools.
 - Host/Origin validation for browser-facing local requests.
+- Disable Uvicorn forwarded-proxy header trust when no trusted reverse proxy is configured.
 - Baseline response security headers and regression coverage for accepted and rejected requests.
 - Loopback validation for the MCP agent URL.
 - Unit tests for agent endpoints, bounded error responses, Host/Origin edge cases, response headers, and MCP URL validation.
