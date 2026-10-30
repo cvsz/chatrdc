@@ -21,6 +21,7 @@ Use this checklist to track actual project delivery. Check items only when direc
 - [x] MCP stdio server exposes read-only health and system-summary tools.
 - [x] MCP target URL is restricted to loopback.
 - [x] Local status dashboard added.
+- [x] Python CI validation configured for Linux and Windows runners.
 - [x] Regression tests cover malformed/mismatched Origin values, generic error responses, and response security headers.
 - [ ] Execute full lint/test/build/security suite on the exact PR head.
 - [ ] Verify fresh-clone installation on Windows 11.
