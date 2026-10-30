@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 PYTHON ?= python3
-APP_PYTHON := agent mcp_server tests/test_agent.py tests/test_mcp_config.py
+PYTHON_PATHS := agent mcp_server scripts tests
 
 .PHONY: help setup format lint test build security ci validate-template
 
@@ -11,7 +11,7 @@ setup:
 	$(PYTHON) -m pip install -e ".[dev]"
 
 format:
-	$(PYTHON) -m ruff format $(APP_PYTHON)
+	$(PYTHON) -m ruff format $(PYTHON_PATHS)
 
 lint:
 	$(PYTHON) -m ruff check $(APP_PYTHON)
