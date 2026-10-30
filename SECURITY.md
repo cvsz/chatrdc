@@ -12,7 +12,7 @@ No production release has been declared. Until a release policy is published, tr
 
 The initial implementation is a local-only, read-only diagnostic scaffold:
 
-- Bind the agent to `127.0.0.1` only.
+- Bind the agent to `127.0.0.1` only and disable forwarded-proxy header trust when no trusted reverse proxy is configured.
 - The MCP server communicates with the local agent over loopback.
 - The agent rejects non-loopback Host values and mismatched browser Origin values.
 - Agent responses disable caching and set anti-sniffing, anti-framing, referrer, and restrictive browser feature-policy headers.
