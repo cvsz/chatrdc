@@ -17,6 +17,7 @@ All notable chatrdc changes are documented here. The project has not declared a 
 
 ### Changed
 
+- Added a Windows GitHub Actions validation job alongside the Linux CI path.
 - Initialized README and ABOUT for the chatrdc product.
 - Replaced generic Makefile placeholders with project lint, test, build, security, and CI commands.
 - Extended CI and CodeQL configuration for the Python application while retaining repository-baseline validation.
