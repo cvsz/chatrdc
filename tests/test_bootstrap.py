@@ -27,7 +27,12 @@ class BootstrapTest(unittest.TestCase):
             target.write_text(data, encoding="utf-8")
 
     def run_init(self, apply=False, **kwargs):
-        args = {"name": "example-app", "owner": "example-org", "codeowner": "example-org/maintainers", "description": "Example app"}
+        args = {
+            "name": "example-app",
+            "owner": "example-org",
+            "codeowner": "example-org/maintainers",
+            "description": "Example app",
+        }
         args.update(kwargs)
         return initialize(self.root, apply=apply, **args)
 
