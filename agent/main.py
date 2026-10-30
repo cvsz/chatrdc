@@ -52,33 +52,52 @@ def _summary() -> SystemSummary:
 async def restrict_browser_origin_and_host(request: Request, call_next):
     """Reject DNS-rebinding Host values and cross-origin browser requests."""
     host = request.url.hostname
+    response = None
     if host not in _ALLOWED_HOSTS:
-        return JSONResponse(status_code=403, content={"detail": "Host not allowed"})
+        response = JSONResponse(status_code=403, content={"detail": "Host not allowed"})
+    else:
+        origin = request.headers.get("origin")
+        if origin:
+            try:
+                parsed = urlsplit(origin)
+                origin_host = parsed.hostname
+                origin_port = parsed.port
+            except ValueError:
+                response = JSONResponse(
+                    status_code=403,
+                    content={"detail": "Origin not allowed"},
+                )
+            else:
+                request_port = request.url.port
+                if (
+                    parsed.scheme != request.url.scheme
+                    or parsed.username is not None
+                    or parsed.password is not None
+                    or origin_host not in _ALLOWED_HOSTS
+                    or origin_host != host
+                    or (origin_port or (443 if parsed.scheme == "https" else 80))
+                    != (request_port or (443 if request.url.scheme == "https" else 80))
+                    or parsed.path not in {"", "/"}
+                    or parsed.query
+                    or parsed.fragment
+                ):
+                    response = JSONResponse(
+                        status_code=403,
+                        content={"detail": "Origin not allowed"},
+                    )
 
-    origin = request.headers.get("origin")
-    if origin:
-        try:
-            parsed = urlsplit(origin)
-            origin_host = parsed.hostname
-            origin_port = parsed.port
-        except ValueError:
-            return JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
-        request_port = request.url.port
-        if (
-            parsed.scheme != request.url.scheme
-            or parsed.username is not None
-            or parsed.password is not None
-            or origin_host not in _ALLOWED_HOSTS
-            or origin_host != host
-            or (origin_port or (443 if parsed.scheme == "https" else 80))
-            != (request_port or (443 if request.url.scheme == "https" else 80))
-            or parsed.path not in {"", "/"}
-            or parsed.query
-            or parsed.fragment
-        ):
-            return JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
+        if response is None:
+            response = await call_next(request)
 
-    return await call_next(request)
+    response.headers.setdefault("Cache-Control", "no-store")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=()",
+    )
+    return response
 
 
 @app.get("/health")
