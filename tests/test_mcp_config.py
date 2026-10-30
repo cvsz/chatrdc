@@ -11,7 +11,6 @@ from mcp_server.server import _build_local_opener, _validate_agent_url
     "url",
     [
         "http://127.0.0.1:8765",
-        "http://localhost:8765/",
         "http://[::1]:8765",
     ],
 )
@@ -28,6 +27,14 @@ def test_accepts_loopback_agent_urls(url):
         "http://user:password@127.0.0.1:8765",
         "http://127.0.0.1:8765/api/v1/system",
         "http://127.0.0.1:99999",
+        "http://localhost:8765",
+        "http://localhost.localdomain:8765",
+        "http://127.0.0.1:8765?",
+        "http://127.0.0.1:8765#",
+        "http://[::1:8765",
+        "http://127.0.0.1\\\\@192.168.1.20:8765",
+        "http://127.0.0.1:8765\\n",
+        "http://127.0.0.1:8765\n",
     ],
 )
 def test_rejects_non_loopback_or_ambiguous_agent_urls(url):
