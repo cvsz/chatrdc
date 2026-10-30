@@ -49,7 +49,7 @@ make security
 make ci
 ```
 
-For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_config.py` and `ruff check agent mcp_server tests/test_agent.py tests/test_mcp_config.py`.
+The lint and format targets cover Python sources under `agent/`, `mcp_server/`, `scripts/`, and `tests/`. For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_config.py` and `ruff check agent mcp_server tests/test_agent.py tests/test_mcp_config.py`.
 
 ## Quality and security expectations
 
