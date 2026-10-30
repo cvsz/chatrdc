@@ -1,5 +1,5 @@
+from urllib.request import ProxyHandler
 from urllib.request import (
-    ProxyHandler,
     build_opener as urllib_build_opener,
 )
 
