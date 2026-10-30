@@ -1,5 +1,7 @@
+import pytest
 from fastapi.testclient import TestClient
 
+from agent import main
 from agent.main import app
 
 client = TestClient(app, base_url="http://127.0.0.1")
@@ -22,6 +24,18 @@ def test_system_summary_is_bounded():
     assert "home_directory" not in body
 
 
+def test_system_summary_hides_internal_error_details(monkeypatch):
+    def fail_summary():
+        raise RuntimeError("sensitive internal diagnostic")
+
+    monkeypatch.setattr(main, "_summary", fail_summary)
+    response = client.get("/api/v1/system")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Unable to collect system summary"}
+    assert "sensitive internal diagnostic" not in response.text
+
+
 def test_dashboard_serves_local_ui():
     response = client.get("/")
     assert response.status_code == 200
@@ -42,8 +56,27 @@ def test_rejects_cross_origin_browser_request():
     assert response.status_code == 403
 
 
-def test_rejects_origin_with_mismatched_scheme():
-    response = client.get("/health", headers={"origin": "https://127.0.0.1:80"})
+def test_accepts_matching_loopback_origin():
+    response = client.get("/health", headers={"origin": "http://127.0.0.1"})
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "origin",
+    [
+        "https://127.0.0.1:80",
+        "http://localhost",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1/path",
+        "http://127.0.0.1/?query=1",
+        "http://127.0.0.1/#fragment",
+        "http://user@127.0.0.1",
+        "null",
+        "http://127.0.0.1:invalid",
+    ],
+)
+def test_rejects_malformed_or_mismatched_origins(origin):
+    response = client.get("/health", headers={"origin": origin})
     assert response.status_code == 403
 
 
