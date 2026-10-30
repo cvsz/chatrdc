@@ -11,6 +11,8 @@ The canonical policy is [SECURITY.md](../SECURITY.md). This document summarizes 
 - Read-only diagnostics only; no generic shell or file-write tools.
 - Bounded HTTP response reads and short request timeout in MCP bridge.
 - Generic API errors rather than stack traces.
+- `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY` on agent responses.
+- A restrictive Permissions Policy disabling camera, microphone, and geolocation access.
 - No environment variables, process command lines, or user document contents in the API response.
 
 ## Required before remote access
