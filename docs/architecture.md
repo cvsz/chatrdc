@@ -14,7 +14,7 @@ chatrdc is a cross-platform desktop-management foundation. The first increment i
 - Local dashboard: `GET /`.
 - Intended listener: `127.0.0.1:8765`; never expose this port directly to LAN or public ingress.
 
-The host summary includes OS/platform release, Python version, CPU count, and memory/disk capacity. It must not enumerate user documents, environment variables, command lines, or credentials.
+The host summary includes OS/platform release, Python version, CPU count, and memory/disk capacity. It must not enumerate user documents, environment variables, command lines, or credentials. Agent responses disable caching and set baseline anti-sniffing, anti-framing, referrer, and browser feature-policy headers.
 
 ### MCP connector
 
