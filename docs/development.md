@@ -1,43 +1,65 @@
 # Development
 
+## Requirements
+
+- Python 3.11 or newer.
+- Git.
+- A supported Windows or Linux/WSL2 environment for platform-specific acceptance.
+- Network access to install dependencies from the configured package index.
+
 ## Local setup
 
-1. Clone the repository.
-2. Copy `.env.example` to an ignored `.env` and populate local-only values.
-3. Install the selected runtime and dependencies.
-4. Replace placeholder Makefile targets with real project commands.
-5. Run:
-
-   ```bash
-   make validate-template
-   ```
-
-6. Run project-specific formatting, linting, type checks, tests, build, and security checks before opening a pull request.
-
-## Quality expectations
-
-- Keep changes small and reviewable.
-- Read `AGENTS.md` and narrower subtree instructions before editing.
-- Add tests for behavior changes.
-- Prefer deterministic/reproducible tooling.
-- Keep CI permissions least privilege.
-- Pin Actions/dependencies according to the project's supply-chain policy.
-- Do not commit secrets or local credentials.
-- Do not weaken security/CI gates to obtain a passing build.
-- Fix the root cause of failed validation rather than excluding relevant checks.
-
-## Pull-request validation
-
-Before merge, capture exact-head evidence for the checks that apply to the change. Do not rely on a previously green commit after the PR head has changed.
-
-For repository administration changes, use the read-back verifier:
-
 ```bash
-python3 scripts/github_admin.py --repo OWNER/REPO --verify
+python -m venv .venv
+# Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+# Linux/WSL2:
+source .venv/bin/activate
+
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
 ```
 
-## Documentation
+## Run the local agent
 
-Update architecture, development, release, governance, security, ADRs, and operational docs when their assumptions change.
+```bash
+python -m agent
+```
 
-Documentation must distinguish intended configuration from verified effective state.
+Open `http://127.0.0.1:8765/`. The launcher binds to loopback by default. Do not override the listener to a LAN/public interface.
+
+## Run the MCP server
+
+Start the agent in one terminal, then run:
+
+```bash
+python -m mcp_server.server
+```
+
+This starts a stdio MCP server for a compatible MCP host. ChatGPT integration is not claimed until a supported client configuration and end-to-end invocation have been verified.
+
+## Validation
+
+```bash
+make setup
+make lint
+make test
+make build
+make security
+make ci
+```
+
+The lint and format targets cover Python sources under `agent/`, `mcp_server/`, `scripts/`, and `tests/`. For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_config.py` and `ruff check agent mcp_server tests/test_agent.py tests/test_mcp_config.py`.
+
+## Quality and security expectations
+
+- Add tests for behavior and error paths.
+- Keep network exposure disabled unless the entire remote-access security gate has passed.
+- Preserve read-only capabilities until authorization, audit, consent, and independent review exist.
+- Do not commit secrets, tokens, private keys, `.env`, or generated private evidence.
+- Keep CI permissions least-privilege and Actions pinned according to the repository policy.
+- Fix the root cause of failed validation; do not weaken checks to obtain a green result.
+
+## Platform acceptance
+
+CI runs the Python lint, formatting, test, build, and dependency-audit suite on Linux and Windows runners. Hosted Windows CI is useful compatibility evidence, but it is not equivalent to acceptance on a supported Windows 11 desktop. Record exact OS/build, Python version, dependency versions, commands, results, and failure logs for each platform-specific acceptance run.

@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
 """Initialize a repository created from ztemplate. Python 3.10+, stdlib only."""
 
 import argparse
 import json
 import os
-from pathlib import Path
 import re
 import tempfile
-from datetime import date
+from pathlib import Path
 
 OWNER_RE = re.compile(r"^(?!-)[A-Za-z0-9-]{1,39}(?<!-)$")
 CODEOWNER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,38}(?:/[A-Za-z0-9][A-Za-z0-9-]{0,99})?$")
@@ -41,10 +39,17 @@ def build_changes(root: Path, name: str, owner: str, codeowner: str, description
         raise ValueError("Invalid GitHub owner")
     if not CODEOWNER_RE.fullmatch(codeowner):
         raise ValueError("Invalid CODEOWNERS user or org/team; provide --codeowner explicitly")
-    if not description.strip() or len(description) > 500 or "\n" in description or "\r" in description:
+    if (
+        not description.strip()
+        or len(description) > 500
+        or "\n" in description
+        or "\r" in description
+    ):
         raise ValueError("Description must be one nonempty line (max 500 characters)")
     # Escape generated Markdown and YAML contexts independently.
-    markdown_description = description.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    markdown_description = (
+        description.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    )
     markdown_description = markdown_description.replace("\\", "\\\\")
     values = {
         "{{PROJECT_NAME}}": name,
@@ -75,10 +80,17 @@ def build_changes(root: Path, name: str, owner: str, codeowner: str, description
     return changes
 
 
-def initialize(root: Path, name: str, owner: str, codeowner: str, description: str, apply: bool) -> list[str]:
+def initialize(
+    root: Path, name: str, owner: str, codeowner: str, description: str, apply: bool
+) -> list[str]:
     root = root.resolve()
     marker = root / MARKER
-    args = {"name": name, "owner": owner, "codeowner": codeowner, "description": description.strip()}
+    args = {
+        "name": name,
+        "owner": owner,
+        "codeowner": codeowner,
+        "description": description.strip(),
+    }
     if marker.exists() or marker.is_symlink():
         if marker.is_symlink() or not marker.is_file():
             raise ValueError("Unsafe initialization marker")
@@ -87,7 +99,11 @@ def initialize(root: Path, name: str, owner: str, codeowner: str, description: s
             raise ValueError("Already initialized with different settings; edit manually")
         return []
     changes = build_changes(root, name, owner, codeowner, description.strip())
-    modified = sorted(path for path, data in changes.items() if safe_file(root, path).read_text(encoding="utf-8") != data)
+    modified = sorted(
+        path
+        for path, data in changes.items()
+        if safe_file(root, path).read_text(encoding="utf-8") != data
+    )
     if apply:
         # All inputs validated before any writes. Keep the branch clean so git can rollback.
         for target in modified:
@@ -109,19 +125,25 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", required=True, help="Repository name")
     parser.add_argument("--owner", required=True, help="GitHub user or organization")
-    parser.add_argument("--codeowner", required=True, help="Existing GitHub username or org/team with write access")
+    parser.add_argument(
+        "--codeowner", required=True, help="Existing GitHub username or org/team with write access"
+    )
     parser.add_argument("--description", required=True, help="One-line project description")
     parser.add_argument("--apply", action="store_true", help="Write changes; otherwise dry run")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
     try:
-        modified = initialize(args.root, args.name, args.owner, args.codeowner, args.description, args.apply)
+        modified = initialize(
+            args.root, args.name, args.owner, args.codeowner, args.description, args.apply
+        )
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"bootstrap: {exc}\n")
     label = "Applied" if args.apply else "Planned"
     print(f"{label}: {', '.join(modified) if modified else 'already initialized / no changes'}")
     if args.apply:
-        print("Next: verify CODEOWNERS identity has write access; review LICENSE, SECURITY.md, CI, deployment and IMPLEMENTATION-CHECKLIST.md.")
+        print(
+            "Next: verify CODEOWNERS identity has write access; review LICENSE, SECURITY.md, CI, deployment and IMPLEMENTATION-CHECKLIST.md."
+        )
     return 0
 
 
