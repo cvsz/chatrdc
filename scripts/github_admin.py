@@ -18,6 +18,7 @@ DEFAULT_BRANCH = "main"
 REQUIRED_CHECKS = (
     "repository-baseline",
     "python",
+    "windows-python",
     "Analyze Python and GitHub Actions",
     "dependency-review",
 )
