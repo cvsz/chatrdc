@@ -41,6 +41,7 @@ The helper configures `main` to require:
 - strict/up-to-date required status checks;
 - `repository-baseline`;
 - `python`;
+- `windows-python`;
 - `Analyze Python and GitHub Actions`;
 - `dependency-review`;
 - administrator enforcement;
