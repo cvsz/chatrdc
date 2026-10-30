@@ -79,3 +79,24 @@ def test_rejects_malformed_or_mismatched_origins(origin):
     response = client.get("/health", headers={"origin": origin})
     assert response.status_code == 403
 
+
+def test_agent_sets_baseline_security_headers():
+    response = client.get("/api/v1/system")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["permissions-policy"] == (
+        "camera=(), microphone=(), geolocation=()"
+    )
+
+
+def test_rejected_host_response_also_has_security_headers():
+    response = client.get("/health", headers={"host": "attacker.example"})
+
+    assert response.status_code == 403
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-content-type-options"] == "nosniff"
+
