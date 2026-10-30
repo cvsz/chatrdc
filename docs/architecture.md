@@ -12,7 +12,7 @@ chatrdc is a cross-platform desktop-management foundation. The first increment i
 - Health endpoint: `GET /health`.
 - Bounded host summary: `GET /api/v1/system`.
 - Local dashboard: `GET /`.
-- Intended listener: `127.0.0.1:8765`; never expose this port directly to LAN or public ingress.
+- Intended listener: `127.0.0.1:8765`; forwarded-proxy header processing is disabled because the service has no trusted reverse proxy; never expose this port directly to LAN or public ingress.
 
 The host summary includes OS/platform release, Python version, CPU count, and memory/disk capacity. It must not enumerate user documents, environment variables, command lines, or credentials. Agent responses disable caching and set baseline anti-sniffing, anti-framing, referrer, and browser feature-policy headers.
 
