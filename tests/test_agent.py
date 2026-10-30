@@ -88,9 +88,7 @@ def test_agent_sets_baseline_security_headers():
     assert response.headers["referrer-policy"] == "no-referrer"
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-frame-options"] == "DENY"
-    assert response.headers["permissions-policy"] == (
-        "camera=(), microphone=(), geolocation=()"
-    )
+    assert response.headers["permissions-policy"] == ("camera=(), microphone=(), geolocation=()")
 
 
 def test_rejected_host_response_also_has_security_headers():
