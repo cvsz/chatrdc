@@ -97,4 +97,3 @@ def test_rejected_host_response_also_has_security_headers():
     assert response.status_code == 403
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["x-content-type-options"] == "nosniff"
-
