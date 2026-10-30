@@ -18,20 +18,39 @@ Security-first desktop management foundation for Windows and Linux/WSL2, built a
 
 Requires Python 3.11+.
 
+Install the project and its development dependencies:
+
 ```bash
 python -m pip install -e ".[dev]"
+```
+
+Start the local agent in terminal 1:
+
+```bash
 python -m agent
 ```
 
-Open http://127.0.0.1:8765/ in a browser. In a second terminal, run the MCP stdio server:
+Open http://127.0.0.1:8765/ in a browser. The dashboard and API are served by the same agent process and origin.
+
+Start the MCP stdio connector in terminal 2 (or configure the command in a compatible MCP host):
 
 ```bash
 python -m mcp_server.server
 ```
 
-The MCP server expects the local agent at `http://127.0.0.1:8765`. Do not expose the agent directly to a LAN or the Internet.
+The MCP connector calls the same local agent at `http://127.0.0.1:8765`. The agent must be running before MCP tools can return live data. If the agent is stopped, MCP reports the agent as unavailable; restart the agent to restore connectivity.
 
-## Development checks
+Do not expose the agent directly to a LAN or the Internet.
+
+## Connectivity verification
+
+The live connectivity suite starts the real ASGI agent on an ephemeral loopback TCP port and verifies dashboard/API reachability, MCP health and system-summary calls, and the disconnected-agent error path:
+
+```bash
+python -m pytest -q tests/test_connectivity.py
+```
+
+Run the complete development checks with:
 
 ```bash
 make setup

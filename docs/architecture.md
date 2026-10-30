@@ -13,6 +13,7 @@ chatrdc is a cross-platform desktop-management foundation. The first increment i
 - Bounded host summary: `GET /api/v1/system`.
 - Local dashboard: `GET /`.
 - Intended listener: `127.0.0.1:8765`; never expose this port directly to LAN or public ingress.
+- Uvicorn forwarded-proxy header processing is disabled so client/host security decisions are not based on untrusted forwarded headers.
 
 The host summary includes OS/platform release, Python version, CPU count, and memory/disk capacity. It must not enumerate user documents, environment variables, command lines, or credentials.
 
@@ -25,7 +26,18 @@ The host summary includes OS/platform release, Python version, CPU count, and me
 
 ### Management UI
 
-The dashboard is served by the local agent and displays health plus the bounded system summary. It is not an authenticated multi-user control plane and must remain local-only.
+The dashboard is served by the local agent and displays health plus the bounded system summary. Its browser requests use same-origin relative paths (`/health` and `/api/v1/system`), so the UI and API share one agent process and origin. It is not an authenticated multi-user control plane and must remain local-only.
+
+## Local connectivity contract
+
+The intended local path is:
+
+1. Browser → dashboard served by the agent.
+2. Dashboard → same-origin agent health and system endpoints.
+3. MCP host → stdio MCP connector → loopback HTTP agent.
+4. Agent → bounded, read-only host diagnostics.
+
+The agent must be started before the MCP connector can return live data. If the agent is unavailable, MCP calls fail with a bounded `RuntimeError`; they do not silently return cached or fabricated status. `tests/test_connectivity.py` exercises a real loopback TCP listener and verifies the dashboard/API path, live MCP health/system calls, and the disconnected-agent failure path.
 
 ## Trust boundaries
 
@@ -37,7 +49,7 @@ The third boundary is **not implemented**. Do not infer remote access from the p
 
 ## Planned layers
 
-1. **P0 — safe local foundation:** bounded read-only API, loopback-only launch path, tests and documentation.
+1. **P0 — safe local foundation:** bounded read-only API, loopback-only launch path, live connectivity tests and documentation.
 2. **P1 — identity and device enrollment:** revocable device credentials, operator authentication, authorization tests, and audit events.
 3. **P1 — secure remote connectivity:** gateway/tunnel integration, TLS, request authentication, rate limits, replay protections, and no direct agent ingress.
 4. **P2 — desktop capabilities:** individually allowlisted capabilities with explicit consent and independent security review; do not introduce arbitrary command execution.

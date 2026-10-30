@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import platform
 import socket
 from pathlib import Path
@@ -28,6 +29,22 @@ class SystemSummary(BaseModel):
     disk_free_bytes: int
 
 
+def _is_loopback_peer(request: Request) -> bool:
+    """Accept only direct connections from loopback IP addresses."""
+    if request.client is None:
+        return False
+
+    try:
+        address = ipaddress.ip_address(request.client.host)
+    except (ValueError, TypeError):
+        return False
+
+    if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped:
+        address = address.ipv4_mapped
+
+    return address.is_loopback
+
+
 def _summary() -> SystemSummary:
     disk_path = Path.home().anchor or "/"
     try:
@@ -50,10 +67,19 @@ def _summary() -> SystemSummary:
 
 @app.middleware("http")
 async def restrict_browser_origin_and_host(request: Request, call_next):
-    """Reject DNS-rebinding Host values and cross-origin browser requests."""
+    """Reject non-loopback peers, DNS-rebinding Host values and cross-origin requests."""
+    if not _is_loopback_peer(request):
+        return JSONResponse(
+            status_code=403,
+            content={"detail": "Local connections only"},
+        )
+
     host = request.url.hostname
     if host not in _ALLOWED_HOSTS:
-        return JSONResponse(status_code=403, content={"detail": "Host not allowed"})
+        return JSONResponse(
+            status_code=403,
+            content={"detail": "Host not allowed"},
+        )
 
     origin = request.headers.get("origin")
     if origin:
