@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Initialize a repository created from ztemplate. Python 3.10+, stdlib only."""
 
 import argparse
