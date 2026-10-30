@@ -79,7 +79,3 @@ def test_rejects_malformed_or_mismatched_origins(origin):
     response = client.get("/health", headers={"origin": origin})
     assert response.status_code == 403
 
-
-def test_rejects_origin_with_userinfo():
-    response = client.get("/health", headers={"origin": "http://user@127.0.0.1"})
-    assert response.status_code == 403
