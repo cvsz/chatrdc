@@ -17,9 +17,11 @@ Use this checklist to track actual project delivery. Check items only when direc
 - [x] Local agent exposes read-only health and bounded system summary.
 - [x] Agent launch path binds to loopback by default.
 - [x] Host and browser Origin checks added to the local agent.
+- [x] Baseline no-store, anti-framing, anti-sniffing, referrer, and Permissions Policy response headers added.
 - [x] MCP stdio server exposes read-only health and system-summary tools.
 - [x] MCP target URL is restricted to loopback.
 - [x] Local status dashboard added.
+- [x] Regression tests cover malformed/mismatched Origin values, generic error responses, and response security headers.
 - [ ] Execute full lint/test/build/security suite on the exact PR head.
 - [ ] Verify fresh-clone installation on Windows 11.
 - [ ] Verify fresh-clone installation on Linux and WSL2.
