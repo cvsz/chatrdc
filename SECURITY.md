@@ -14,7 +14,10 @@ The initial implementation is a local-only, read-only diagnostic scaffold:
 
 - Bind the agent to `127.0.0.1` only.
 - The MCP server communicates with the local agent over loopback.
+- The agent rejects non-loopback Host values and mismatched browser Origin values.
+- Agent responses disable caching and set anti-sniffing, anti-framing, referrer, and restrictive browser feature-policy headers.
 - Expose only health and bounded host-summary data.
+- Return generic diagnostic errors without exposing internal exception details.
 - Do not expose arbitrary shell, file writes, process termination, service control, screen capture, or remote desktop control.
 - Do not place credentials, private keys, device secrets, or personal data in the repository.
 - Never put a production endpoint or secret in an example configuration.
