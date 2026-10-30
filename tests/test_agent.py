@@ -1,10 +1,28 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from agent import __main__ as agent_cli
 from agent import main
 from agent.main import app
 
 client = TestClient(app, base_url="http://127.0.0.1")
+
+
+def test_launcher_disables_forwarded_proxy_headers(monkeypatch):
+    captured = {}
+
+    def capture_run(application, **kwargs):
+        captured["application"] = application
+        captured.update(kwargs)
+
+    monkeypatch.setattr(agent_cli.uvicorn, "run", capture_run)
+    agent_cli.main()
+
+    assert captured["application"] == "agent.main:app"
+    assert captured["host"] == "127.0.0.1"
+    assert captured["port"] == 8765
+    assert captured["proxy_headers"] is False
+    assert captured["reload"] is False
 
 
 def test_health_is_ok():
