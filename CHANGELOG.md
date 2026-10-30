@@ -10,8 +10,9 @@ All notable chatrdc changes are documented here. The project has not declared a 
 - Loopback-only launcher and a local status dashboard.
 - Stdio MCP connector exposing read-only health and system-summary tools.
 - Host/Origin validation for browser-facing local requests.
+- Baseline response security headers and regression coverage for accepted and rejected requests.
 - Loopback validation for the MCP agent URL.
-- Unit tests for agent endpoints, host/origin protections, and MCP URL validation.
+- Unit tests for agent endpoints, bounded error responses, Host/Origin edge cases, response headers, and MCP URL validation.
 - Product-specific architecture, development, startup, security, release, and readiness documentation.
 
 ### Changed
