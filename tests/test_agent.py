@@ -5,7 +5,11 @@ from agent import __main__ as agent_cli
 from agent import main
 from agent.main import app
 
-client = TestClient(app, base_url="http://127.0.0.1")
+client = TestClient(
+    app,
+    base_url="http://127.0.0.1",
+    client=("127.0.0.1", 50000),
+)
 
 
 def test_launcher_disables_forwarded_proxy_headers(monkeypatch):
@@ -115,3 +119,58 @@ def test_rejected_host_response_also_has_security_headers():
     assert response.status_code == 403
     assert response.headers["cache-control"] == "no-store"
     assert response.headers["x-content-type-options"] == "nosniff"
+
+
+def test_rejects_non_loopback_peer():
+    remote_client = TestClient(
+        app,
+        base_url="http://127.0.0.1",
+        client=("192.168.1.20", 12345),
+    )
+
+    response = remote_client.get("/health")
+
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Local connections only"
+
+
+def test_rejects_missing_peer():
+    missing_peer_client = TestClient(
+        app,
+        base_url="http://127.0.0.1",
+        client=None,
+    )
+
+    response = missing_peer_client.get("/health")
+
+    assert response.status_code == 403
+
+
+def test_forwarded_loopback_header_does_not_override_remote_peer():
+    remote_client = TestClient(
+        app,
+        base_url="http://127.0.0.1",
+        client=("192.168.1.20", 12345),
+    )
+
+    response = remote_client.get(
+        "/health",
+        headers={
+            "x-forwarded-for": "127.0.0.1",
+            "forwarded": "for=127.0.0.1",
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_accepts_ipv4_mapped_ipv6_loopback_peer():
+    mapped_client = TestClient(
+        app,
+        base_url="http://127.0.0.1",
+        client=("::ffff:127.0.0.1", 12345),
+    )
+
+    response = mapped_client.get("/health")
+
+    assert response.status_code == 200

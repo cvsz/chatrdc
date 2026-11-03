@@ -7,9 +7,9 @@ def main() -> None:
     uvicorn.run(
         "agent.main:app",
         host="127.0.0.1",
-        proxy_headers=False,
         port=8765,
         access_log=False,
+        proxy_headers=False,
         reload=False,
     )
 

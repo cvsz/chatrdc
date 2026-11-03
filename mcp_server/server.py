@@ -15,27 +15,41 @@ _DEFAULT_AGENT_URL = "http://127.0.0.1:8765"
 
 
 def _validate_agent_url(value: str) -> str:
-    parsed = urlsplit(value)
-    if parsed.scheme != "http" or not parsed.hostname or parsed.username or parsed.password:
+    if not isinstance(value, str) or not value:
         raise ValueError("CHATRDC_AGENT_URL must be an http loopback URL")
-    if parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
-        raise ValueError("CHATRDC_AGENT_URL must not include a path, query, or fragment")
 
-    host = parsed.hostname.lower()
-    if host != "localhost":
-        try:
-            address = ipaddress.ip_address(host)
-        except ValueError as exc:
-            raise ValueError("CHATRDC_AGENT_URL must target loopback") from exc
-        if not address.is_loopback:
-            raise ValueError("CHATRDC_AGENT_URL must target loopback")
+    if any(char.isspace() or ord(char) < 0x20 or ord(char) == 0x7F for char in value):
+        raise ValueError("CHATRDC_AGENT_URL contains invalid characters")
+    if "\\" in value or "?" in value or "#" in value:
+        raise ValueError("CHATRDC_AGENT_URL must not contain ambiguous URL syntax")
 
     try:
+        parsed = urlsplit(value)
+        if (
+            parsed.scheme.lower() != "http"
+            or not parsed.netloc
+            or not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+        ):
+            raise ValueError("CHATRDC_AGENT_URL must be an http loopback URL")
+
+        if parsed.path not in {"", "/"} or parsed.query or parsed.fragment:
+            raise ValueError("CHATRDC_AGENT_URL must not include a path, query, or fragment")
+
+        address = ipaddress.ip_address(parsed.hostname)
         port = parsed.port
     except ValueError as exc:
-        raise ValueError("CHATRDC_AGENT_URL has an invalid port") from exc
+        raise ValueError(
+            "CHATRDC_AGENT_URL must contain a valid loopback IP literal and port"
+        ) from exc
+
+    if not address.is_loopback:
+        raise ValueError("CHATRDC_AGENT_URL must target loopback")
+
     if port is not None and not 1 <= port <= 65535:
         raise ValueError("CHATRDC_AGENT_URL has an invalid port")
+
     return value.rstrip("/")
 
 

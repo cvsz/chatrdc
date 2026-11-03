@@ -23,7 +23,8 @@ Use this checklist to track actual project delivery. Check items only when direc
 - [x] Local status dashboard added.
 - [x] Python CI validation configured for Linux and Windows runners.
 - [x] Regression tests cover malformed/mismatched Origin values, forwarded-proxy header settings, generic error responses, and response security headers.
-- [ ] Execute full lint/test/build/security suite on the exact PR head.
+- [x] Execute full lint/test/build/security suite on the current verified head (Python 3.14.4): pip check clean, ruff clean, format clean, pytest 41 passed + 3 subtests, sdist+wheel built, pip-audit no known vulnerabilities, validator passes locally with .venv present.
+- [ ] Execute full lint/test/build/security suite on the exact PR head (pending GitHub Actions on merged SHA).
 - [ ] Verify fresh-clone installation on Windows 11.
 - [ ] Verify fresh-clone installation on Linux and WSL2.
 - [ ] Add MCP host/client integration acceptance evidence.
