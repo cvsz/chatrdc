@@ -16,16 +16,16 @@
 - [x] Confirm repository URL and ownership. — https://github.com/cvsz/chatrdc, owner cvsz (git remote + GitHub API, VERIFIED)
 - [x] Identify current default branch. — `main` (GitHub API, VERIFIED)
 - [x] Identify current development branch. — `staging/connectivity-first` (git branch, VERIFIED)
-- [x] Record exact HEAD SHA. — `f19e339627c16254d4aa2e6f94899287f22600b7` (git log, VERIFIED)
+- [x] Record exact HEAD SHA. — `4879da8d4b69d4deb83fcb1695eaf93a0868a1d9` (git log, VERIFIED)
 - [x] Inspect Git working tree. — clean except untracked `docs/checlist.md`, `docs/ent-pro-e2e-master-prompt.md`, `package-lock.json` (git status, VERIFIED)
 - [x] Identify all linked worktrees. — `/home/cvsz/chatrdc` (healthy), `/home/cvsz/chatrdc-validator` c356049 detached (healthy), `/home/cvsz/chatrdc-connectivity-signed` BROKEN gitdir (F2, BLOCKED, preserved) (git worktree list, VERIFIED)
-- [x] Identify uncommitted modifications. — none (working tree clean after commit f19e339) (git status, VERIFIED)
+- [x] Identify uncommitted modifications. — none (working tree clean after commit 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9) (git status, VERIFIED)
 - [x] Identify untracked files. — `docs/checlist.md`, `docs/ent-pro-e2e-master-prompt.md`, `package-lock.json` (git status, VERIFIED; preserved, not committed)
 - [ ] Verify local backups. — no dedicated backup worktree found; `chatrdc-local-backup-20261104-013529` not present on disk (UNVERIFIED)
 - [x] Read all applicable `AGENTS.md`. — repository AGENTS.md read (VERIFIED)
 - [x] Review repository governance requirements. — GOVERNANCE.md, CONTRIBUTING.md, SECURITY.md read (VERIFIED)
 - [x] Review current branch protection and rulesets. — `ZEAZDEV-PRODUCTION-GATE` id 26171864 active on `refs/heads/main`; required checks: CodeQL, dependency-review, repository-baseline; code-owner review NOT required; python/windows-python NOT required (GitHub API read-back, VERIFIED)
-- [x] Identify all open PRs. — #3 (989af95, Draft), #5 (f19e339, Draft, dirty/mergeable=false), #6 (c356049, Draft, clean) (GitHub API, VERIFIED)
+- [x] Identify all open PRs. — #3 (989af95, Draft), #5 (4879da8d4b69d4deb83fcb1695eaf93a0868a1d9, Draft, reconciled — base 989af95 is ancestor of head; mergeability re-evaluating on GitHub), #6 (c356049, Draft, clean) (GitHub API, VERIFIED)
 - [ ] Identify unresolved review comments. — PR #5 has CHANGES_REQUESTED on older head, not current SHA (UNVERIFIED for current SHA)
 - [x] Establish release evidence directory or tracking system. — `docs/engineering/phase-0-repository-state-report.md` and `docs/engineering/phase-1-findings-register.md` created (VERIFIED)
 
@@ -33,7 +33,7 @@
 - [x] Repository state documented. — PHASE 0 report + PHASE 1 register (VERIFIED)
 - [x] No user changes overwritten. — stash and worktrees preserved (VERIFIED)
 - [x] No unexplained worktree or branch divergence. — PR #5 reconciled: base `feat/chatrdc-v1-foundation` (`989af95`) is now an ancestor of `staging/connectivity-first` (`407d134`); 0 commits behind, 10 ahead. Merge conflict resolved via normal non-force merge on 2026-11-04. (VERIFIED)
-- [ ] All development work has traceable ownership. — commit f19e339 by cvsz on staging/connectivity-first (VERIFIED for this change)
+- [ ] All development work has traceable ownership. — commit 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9 by cvsz on staging/connectivity-first (VERIFIED for this change)
 
 ### 0.2 Execution Status
 
@@ -936,9 +936,9 @@
 | G3 | Authentication and authorization verified | BLOCKED — NOT implemented by design; P1 roadmap, deferred by SECURITY.md |
 | G4 | Agent and MCP integration verified | VERIFIED — live loopback TCP tests: dashboard, /health, /api/v1/system, MCP health/system, disconnected-agent path |
 | G5 | Windows/Linux/WSL2 verified | UNVERIFIED — only Linux (this env) tested; Windows/WSL2 not performed |
-| G6 | Required tests passed | VERIFIED — 41 passed + 3 subtests; ruff; build; pip-audit; validator; bootstrap |
-| G7 | CI/CD and supply chain passed | PARTIALLY VERIFIED — local checks pass; GitHub Actions status pending/0 on f19e339 (Actions not yet run on exact head) |
-| G8 | Independent review and governance passed | BLOCKED — PR #5 dirty/mergeable=false (42 behind base); no policedbc approval on f19e339 |
+| G6 | Required tests passed | VERIFIED — 55 passed + 3 subtests; ruff; build; pip-audit; validator; bootstrap |
+| G7 | CI/CD and supply chain passed | PARTIALLY VERIFIED — local checks pass; GitHub Actions status pending/0 on 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9 (Actions not yet run on exact head) |
+| G8 | Independent review and governance passed | BLOCKED — PR #5 reconciled (base 989af95 is ancestor of head 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9); GitHub mergeability re-evaluating; no policedbc approval on 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9 |
 | G9 | Release artifacts and rollback verified | NOT_APPLICABLE — only local sdist/wheel built; no release authorized |
 | G10 | Authorized production deployment verified | NOT_APPLICABLE — no deployment authorization; not production-ready |
 
@@ -981,8 +981,8 @@ Select only the highest state supported by evidence.
 - [ ] BLOCKED
 - [x] IN PROGRESS — overall effort ongoing (P1 security gates, PR reconciliation, cross-platform)
 - [x] CODE COMPLETE — read-only scaffold implementation scope complete
-- [x] TEST VERIFIED — required local tests passed: 41 passed + 3 subtests
-- [ ] CI VERIFIED — GitHub Actions status pending/0 on f19e339; required checks (CodeQL, dependency-review, repository-baseline) not yet run on exact head
+- [x] TEST VERIFIED — required local tests passed: 55 passed + 3 subtests
+- [ ] CI VERIFIED — GitHub Actions status pending/0 on 4879da8d4b69d4deb83fcb1695eaf93a0868a1d9; required checks (CodeQL, dependency-review, repository-baseline) not yet run on exact head
 - [ ] RELEASE CANDIDATE — G7/G8 blocked
 - [ ] RELEASE READY — G3/G8 blocked
 - [ ] DEPLOYED — no deployment authorization
