@@ -10,13 +10,19 @@ All notable chatrdc changes are documented here. The project has not declared a 
 - Loopback-only launcher and a local status dashboard.
 - Stdio MCP connector exposing read-only health and system-summary tools.
 - Host/Origin validation for browser-facing local requests.
+- Disable Uvicorn forwarded-proxy header trust when no trusted reverse proxy is configured.
+- Baseline response security headers and regression coverage for accepted and rejected requests.
 - Loopback validation for the MCP agent URL.
+- Unit tests for agent endpoints, bounded error responses, Host/Origin edge cases, response headers, and MCP URL validation.
 - Unit tests for agent endpoints, host/origin protections, and MCP URL validation.
 - Repository baseline validator now skips generated/dependency/cache directories (`.venv`, `build`, `dist`, etc.) to avoid false-positive broken-link reports in local environments; unit tests added.
+- Product-specific architecture, development, startup, security, release, and readiness documentation.
 - PHASE 0 repository state report and PHASE 1 findings register under `docs/engineering/`.
 
 ### Changed
 
+- Added a Windows GitHub Actions validation job alongside the Linux CI path.
+- Expanded lint and format validation to all Python source and test directories.
 - Initialized README and ABOUT for the chatrdc product.
 - Replaced generic Makefile placeholders with project lint, test, build, security, and CI commands.
 - Extended CI and CodeQL configuration for the Python application while retaining repository-baseline validation.

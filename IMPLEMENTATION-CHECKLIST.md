@@ -15,12 +15,16 @@ Use this checklist to track actual project delivery. Check items only when direc
 
 - [x] Python package/runtime declared in pyproject.toml.
 - [x] Local agent exposes read-only health and bounded system summary.
-- [x] Agent launch path binds to loopback by default.
+- [x] Agent launch path binds to loopback by default and disables untrusted forwarded-proxy headers.
 - [x] Host and browser Origin checks added to the local agent.
+- [x] Baseline no-store, anti-framing, anti-sniffing, referrer, and Permissions Policy response headers added.
 - [x] MCP stdio server exposes read-only health and system-summary tools.
 - [x] MCP target URL is restricted to loopback.
 - [x] Local status dashboard added.
+- [x] Python CI validation configured for Linux and Windows runners.
+- [x] Regression tests cover malformed/mismatched Origin values, forwarded-proxy header settings, generic error responses, and response security headers.
 - [x] Execute full lint/test/build/security suite on the current verified head (Python 3.14.4): pip check clean, ruff clean, format clean, pytest 41 passed + 3 subtests, sdist+wheel built, pip-audit no known vulnerabilities, validator passes locally with .venv present.
+- [ ] Execute full lint/test/build/security suite on the exact PR head (pending GitHub Actions on merged SHA).
 - [ ] Verify fresh-clone installation on Windows 11.
 - [ ] Verify fresh-clone installation on Linux and WSL2.
 - [ ] Add MCP host/client integration acceptance evidence.

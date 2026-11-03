@@ -18,6 +18,7 @@ DEFAULT_BRANCH = "main"
 REQUIRED_CHECKS = (
     "repository-baseline",
     "python",
+    "windows-python",
     "Analyze Python and GitHub Actions",
     "dependency-review",
 )
@@ -31,8 +32,7 @@ def gh_api(method: str, endpoint: str, payload: dict[str, Any] | None = None) ->
         cmd,
         input=json.dumps(payload) if payload is not None else None,
         text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=False,
     )
     if proc.returncode != 0:
@@ -132,9 +132,7 @@ def verify(repo: str, branch: str) -> list[str]:
 
     protection = gh_api("GET", f"repos/{repo}/branches/{branch}/protection")
 
-    contexts = set(
-        (protection.get("required_status_checks") or {}).get("contexts") or []
-    )
+    contexts = set((protection.get("required_status_checks") or {}).get("contexts") or [])
     missing_checks = sorted(set(REQUIRED_CHECKS) - contexts)
     if missing_checks:
         errors.append(f"missing required status checks: {', '.join(missing_checks)}")
@@ -201,7 +199,9 @@ def main() -> int:
     parser.add_argument("--repo", default=DEFAULT_REPO)
     parser.add_argument("--branch", default=DEFAULT_BRANCH)
     parser.add_argument("--apply", action="store_true", help="Apply changes; default is dry-run")
-    parser.add_argument("--verify", action="store_true", help="Read back and verify effective settings")
+    parser.add_argument(
+        "--verify", action="store_true", help="Read back and verify effective settings"
+    )
     args = parser.parse_args()
 
     try:

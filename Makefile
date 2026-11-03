@@ -11,7 +11,7 @@ setup:
 	$(PYTHON) -m pip install -e ".[dev]"
 
 format:
-	$(PYTHON) -m ruff format $(APP_PYTHON)
+	$(PYTHON) -m ruff format $(PYTHON_PATHS)
 
 lint:
 	$(PYTHON) -m ruff check $(APP_PYTHON)

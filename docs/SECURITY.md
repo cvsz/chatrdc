@@ -4,13 +4,15 @@ The canonical policy is [SECURITY.md](../SECURITY.md). This document summarizes 
 
 ## Current boundary
 
-- Agent launch binds to `127.0.0.1:8765`.
+- Agent launch binds to `127.0.0.1:8765` and disables Uvicorn forwarded-proxy header trust.
 - Host validation allows loopback hostnames only.
 - Browser Origin, when supplied, must match the request's loopback host and port.
 - MCP connector accepts a loopback-only HTTP URL.
 - Read-only diagnostics only; no generic shell or file-write tools.
 - Bounded HTTP response reads and short request timeout in MCP bridge.
 - Generic API errors rather than stack traces.
+- `Cache-Control: no-store`, `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY` on agent responses.
+- A restrictive Permissions Policy disabling camera, microphone, and geolocation access.
 - No environment variables, process command lines, or user document contents in the API response.
 
 ## Required before remote access

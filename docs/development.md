@@ -60,7 +60,7 @@ make security
 make ci
 ```
 
-For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py` and `ruff check agent mcp_server tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py`.
+For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py` and `ruff check agent mcp_server scripts/validate_repo.py tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py tests/test_validate_repo.py`.
 
 ## Quality and security expectations
 
@@ -73,4 +73,4 @@ For focused development, run `pytest -q tests/test_agent.py tests/test_mcp_confi
 
 ## Platform acceptance
 
-Linux CI is not evidence of Windows acceptance. Record exact OS/build, Python version, dependency versions, commands, results, and failure logs for each platform-specific test run.
+CI runs the Python lint, formatting, test, build, and dependency-audit suite on Linux and Windows runners. Hosted Windows CI is useful compatibility evidence, but it is not equivalent to acceptance on a supported Windows 11 desktop. Record exact OS/build, Python version, dependency versions, commands, results, and failure logs for each platform-specific acceptance run.

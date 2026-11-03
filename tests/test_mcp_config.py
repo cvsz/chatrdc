@@ -1,5 +1,7 @@
 from urllib.request import ProxyHandler
-from urllib.request import build_opener as urllib_build_opener
+from urllib.request import (
+    build_opener as urllib_build_opener,
+)
 
 import pytest
 
