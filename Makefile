@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 PYTHON ?= python3
-APP_PYTHON := agent mcp_server tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py
+APP_PYTHON := agent mcp_server scripts/validate_repo.py tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py tests/test_validate_repo.py
 
 .PHONY: help setup format lint test build security ci validate-template
 

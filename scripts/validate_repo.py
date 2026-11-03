@@ -10,6 +10,39 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Directories whose contents are generated, cached, or third-party and must not
+# be treated as repository-owned Markdown. Skipping them avoids false-positive
+# broken-link reports in local environments (for example, a present .venv) and
+# keeps validation focused on repository-owned documentation.
+SKIPPED_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".cache",
+    "build",
+    "dist",
+    "coverage",
+    "node_modules",
+    ".next",
+    ".nuxt",
+    ".out",
+    "tmp",
+    ".tmp",
+}
+
+
+def _is_skipped_dir(path: Path, root: Path = ROOT) -> bool:
+    try:
+        relative = path.relative_to(root.resolve())
+    except ValueError:
+        return True
+    return any(part in SKIPPED_DIRS for part in relative.parts)
+
+
 REQUIRED_PATHS = (
     "README.md",
     "ABOUT.md",
@@ -41,10 +74,10 @@ LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 SKIP_PREFIXES = ("http://", "https://", "mailto:", "tel:", "#", "data:")
 
 
-def validate_required_paths() -> list[str]:
+def validate_required_paths(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     for rel in REQUIRED_PATHS:
-        if not (ROOT / rel).exists():
+        if not (root / rel).exists():
             errors.append(f"missing required path: {rel}")
     return errors
 
@@ -57,10 +90,10 @@ def normalize_link_target(raw: str) -> str:
     return unquote(target)
 
 
-def validate_markdown_links() -> list[str]:
+def validate_markdown_links(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    for md in sorted(ROOT.rglob("*.md")):
-        if ".git" in md.parts:
+    for md in sorted(root.rglob("*.md")):
+        if _is_skipped_dir(md, root):
             continue
         text = md.read_text(encoding="utf-8")
         for match in LINK_RE.finditer(text):
@@ -70,15 +103,19 @@ def validate_markdown_links() -> list[str]:
             target = normalize_link_target(raw)
             if not target:
                 continue
-            link_base = ROOT if md.relative_to(ROOT).as_posix() == "templates/project-readme.md" else md.parent
+            link_base = (
+                root
+                if md.relative_to(root).as_posix() == "templates/project-readme.md"
+                else md.parent
+            )
             resolved = (link_base / target).resolve()
             try:
-                resolved.relative_to(ROOT.resolve())
+                resolved.relative_to(root.resolve())
             except ValueError:
-                errors.append(f"{md.relative_to(ROOT)}: link escapes repository: {raw}")
+                errors.append(f"{md.relative_to(root)}: link escapes repository: {raw}")
                 continue
             if not resolved.exists():
-                errors.append(f"{md.relative_to(ROOT)}: broken local link: {raw}")
+                errors.append(f"{md.relative_to(root)}: broken local link: {raw}")
     return errors
 
 

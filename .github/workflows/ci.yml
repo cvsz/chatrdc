@@ -56,10 +56,10 @@ jobs:
         run: python -m pip install -e ".[dev]"
 
       - name: Lint
-        run: ruff check agent mcp_server tests/test_agent.py tests/test_mcp_config.py
+        run: ruff check agent mcp_server scripts/validate_repo.py tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py tests/test_validate_repo.py
 
       - name: Check formatting
-        run: ruff format --check agent mcp_server tests/test_agent.py tests/test_mcp_config.py
+        run: ruff format --check agent mcp_server scripts/validate_repo.py tests/test_agent.py tests/test_mcp_config.py tests/test_connectivity.py tests/test_validate_repo.py
 
       - name: Test
         run: pytest -q

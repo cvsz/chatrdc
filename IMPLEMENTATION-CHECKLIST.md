@@ -20,7 +20,7 @@ Use this checklist to track actual project delivery. Check items only when direc
 - [x] MCP stdio server exposes read-only health and system-summary tools.
 - [x] MCP target URL is restricted to loopback.
 - [x] Local status dashboard added.
-- [ ] Execute full lint/test/build/security suite on the exact PR head.
+- [x] Execute full lint/test/build/security suite on the current verified head (Python 3.14.4): pip check clean, ruff clean, format clean, pytest 41 passed + 3 subtests, sdist+wheel built, pip-audit no known vulnerabilities, validator passes locally with .venv present.
 - [ ] Verify fresh-clone installation on Windows 11.
 - [ ] Verify fresh-clone installation on Linux and WSL2.
 - [ ] Add MCP host/client integration acceptance evidence.

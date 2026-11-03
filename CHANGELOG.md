@@ -12,13 +12,15 @@ All notable chatrdc changes are documented here. The project has not declared a 
 - Host/Origin validation for browser-facing local requests.
 - Loopback validation for the MCP agent URL.
 - Unit tests for agent endpoints, host/origin protections, and MCP URL validation.
-- Product-specific architecture, development, startup, security, release, and readiness documentation.
+- Repository baseline validator now skips generated/dependency/cache directories (`.venv`, `build`, `dist`, etc.) to avoid false-positive broken-link reports in local environments; unit tests added.
+- PHASE 0 repository state report and PHASE 1 findings register under `docs/engineering/`.
 
 ### Changed
 
 - Initialized README and ABOUT for the chatrdc product.
 - Replaced generic Makefile placeholders with project lint, test, build, security, and CI commands.
 - Extended CI and CodeQL configuration for the Python application while retaining repository-baseline validation.
+- CI lint/format scope now includes `scripts/validate_repo.py` and `tests/test_validate_repo.py`.
 
 ### Security
 
