@@ -84,8 +84,12 @@ def scan_workflows(root: Path) -> list[str]:
             findings.append(f"{relative}: pull_request_target is forbidden by repository policy")
         if has_pull_request and has_secrets:
             findings.append(f"{relative}: pull_request workflow must not reference secrets")
-        if has_pull_request and _has_write_permissions(source):
-            findings.append(f"{relative}: pull_request workflow must not request write permissions")
+        if has_pull_request and _has_unsafe_write_permissions(
+            source, allow_security_events=path.name == "codeql.yml"
+        ):
+            findings.append(
+                f"{relative}: pull_request workflow has an unsafe write permission grant"
+            )
         if has_pull_request and checks_out_code and not disables_persisted_credentials:
             findings.append(
                 f"{relative}: pull_request checkout must set persist-credentials: false"
