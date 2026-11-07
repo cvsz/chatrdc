@@ -61,7 +61,7 @@ jobs:
       - run: echo test
 """
         )
-        self.assertTrue(any("must not request write permissions" in item for item in findings))
+        self.assertTrue(any("unsafe write permission" in item for item in findings))
 
     def test_job_level_pull_request_write_permissions_are_rejected(self) -> None:
         findings = self.scan(
@@ -77,6 +77,29 @@ jobs:
 """
         )
         self.assertTrue(any("must not request write permissions" in item for item in findings))
+
+    def test_codeql_security_events_permission_is_allowed_only_for_codeql(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workflows = root / ".github" / "workflows"
+            workflows.mkdir(parents=True)
+            (workflows / "codeql.yml").write_text(
+                """name: CodeQL
+on:
+  pull_request:
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  analyze:
+    steps:
+      - uses: actions/checkout@0123456789012345678901234567890123456789
+        with:
+          persist-credentials: false
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(scan_workflows(root), [])
 
     def test_pull_request_target_is_rejected(self) -> None:
         findings = self.scan(
