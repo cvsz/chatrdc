@@ -76,7 +76,7 @@ jobs:
       - run: echo test
 """
         )
-        self.assertTrue(any("must not request write permissions" in item for item in findings))
+        self.assertTrue(any("unsafe write permission" in item for item in findings))
 
     def test_codeql_security_events_permission_is_allowed_only_for_codeql(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
