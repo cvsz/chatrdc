@@ -27,14 +27,26 @@ def _has_event(block: str, event: str) -> bool:
 
 
 def _has_write_permissions(source: str) -> bool:
-    match = re.search(
-        r"(?ms)^permissions:[ \t]*(?:\n(?P<body>(?:^[ \t]+.*(?:\n|$))*))?",
-        source,
-    )
-    if not match:
-        return False
-    permission_text = match.group(0)
-    return bool(re.search(r":\s*write\b|\bwrite-all\b", permission_text))
+    lines = source.splitlines()
+    for index, line in enumerate(lines):
+        match = re.match(r"^(?P<indent>[ \t]*)permissions:[ \t]*(?P<inline>.*)$", line)
+        if not match:
+            continue
+
+        indent = len(match.group("indent").expandtabs(8))
+        permission_lines = [match.group("inline")]
+        for following in lines[index + 1:]:
+            if not following.strip():
+                permission_lines.append("")
+                continue
+            following_indent = len(following) - len(following.lstrip(" \t"))
+            if following_indent <= indent:
+                break
+            permission_lines.append(following.strip())
+
+        if any(re.search(r":\s*write\b|\bwrite-all\b", item) for item in permission_lines):
+            return True
+    return False
 
 
 def scan_workflows(root: Path) -> list[str]:
