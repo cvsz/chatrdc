@@ -26,7 +26,7 @@ def _has_event(block: str, event: str) -> bool:
     )
 
 
-def _has_write_permissions(source: str) -> bool:
+def _has_unsafe_write_permissions(source: str, *, allow_security_events: bool) -> bool:
     lines = source.splitlines()
     for index, line in enumerate(lines):
         match = re.match(r"^(?P<indent>[ \t]*)permissions:[ \t]*(?P<inline>.*)$", line)
@@ -44,8 +44,14 @@ def _has_write_permissions(source: str) -> bool:
                 break
             permission_lines.append(following.strip())
 
-        if any(re.search(r":\s*write\b|\bwrite-all\b", item) for item in permission_lines):
-            return True
+        for item in permission_lines:
+            if re.search(r"\bwrite-all\b", item):
+                return True
+            permission = re.match(r"(?P<scope>[A-Za-z0-9_-]+):\s*(?P<level>write)\b", item)
+            if permission and not (
+                allow_security_events and permission.group("scope") == "security-events"
+            ):
+                return True
     return False
 
 
