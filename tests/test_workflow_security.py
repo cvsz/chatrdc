@@ -63,6 +63,21 @@ jobs:
         )
         self.assertTrue(any("must not request write permissions" in item for item in findings))
 
+    def test_job_level_pull_request_write_permissions_are_rejected(self) -> None:
+        findings = self.scan(
+            """name: Unsafe
+on:
+  pull_request:
+jobs:
+  test:
+    permissions:
+      pull-requests: write
+    steps:
+      - run: echo test
+"""
+        )
+        self.assertTrue(any("must not request write permissions" in item for item in findings))
+
     def test_pull_request_target_is_rejected(self) -> None:
         findings = self.scan(
             """name: Unsafe
