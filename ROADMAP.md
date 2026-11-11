@@ -1,51 +1,59 @@
-# Roadmap
+# chatrdc Roadmap
 
-This template stays language-agnostic while providing production-grade **repository foundations**.
+The roadmap is evidence-driven. A checked implementation item means code/docs exist; it does not mean the item is deployed or production-ready.
 
-## Foundation
+## P0 — Local foundation
 
-- [x] Repository documentation baseline
-- [x] Security and contribution policies
-- [x] Issue and pull request templates
-- [x] CI and security workflow baseline
-- [x] Dependabot configuration
-- [x] Release guidance and release-note configuration
-- [x] Docker and task-runner placeholders
-- [x] Architecture/development/release documentation structure
-- [x] Immutable SHA pinning for baseline GitHub Actions
-- [x] Repository structure and local Markdown-link validation
-- [x] GitHub administration apply/verify automation
-- [x] Protected-default-branch policy baseline
-- [x] ZEAZ cross-agent execution framework
-- [x] Reusable AI guides/playbooks/prompts
-- [x] Discovery-first skills/component/plugin catalog scaffold
-- [x] Safe rollout guidance for existing repositories
+- [x] Product identity and scope documented.
+- [x] Read-only local agent health and system summary.
+- [x] Loopback-only launch path.
+- [x] Local dashboard.
+- [x] Read-only MCP stdio tools.
+- [x] Host/Origin validation and loopback-only MCP target validation.
+- [x] Unit tests for local endpoints and configuration validation.
+- [x] CI coverage for Python validation on Linux and Windows runners.
+- [ ] Verify lint, tests, build, dependency audit, and repository baseline on exact PR head.
+- [ ] Verify Windows 11, Linux, and WSL2 installation/behavior.
+- [ ] Verify MCP host integration end-to-end.
 
-## Reusable first-project startup
+## P1 — Identity and secure remote connectivity
 
-- [x] Identity bootstrap with dry-run, explicit apply, and idempotence
-- [x] Safe ownership/security issue-link replacement
-- [x] Optional project profiles and adoption guide
-- [x] Bootstrap tests in baseline CI
-- [x] Repository administration verification helper
-- [ ] Validate production-capable per-stack adapters in generated repositories
-- [ ] Add end-to-end fixture verification for each adopted stack
+- [ ] Threat model and abuse-case specification.
+- [ ] Operator authentication and device enrollment.
+- [ ] Revocable, rotated per-device credentials.
+- [ ] Device-scoped authorization and deny-by-default policy.
+- [ ] Secure TLS gateway/tunnel with no direct agent ingress.
+- [ ] Rate limits, replay protection, bounded requests, audit and revocation.
+- [ ] Independent security review and negative testing.
 
-## Future optional modules
+## P2 — Desktop management capabilities
 
-- [ ] Language-specific starter packs
-- [ ] Infrastructure-as-code starter packs
-- [ ] Kubernetes and Helm starter packs
-- [ ] SBOM/provenance workflows
-- [ ] Release signing and artifact attestation
-- [ ] OpenSSF Scorecard workflow
-- [ ] Container vulnerability scanning
-- [ ] Documentation site starter
-- [ ] Monorepo profile
-- [ ] Service/API profile
-- [ ] Web application profile
-- [ ] Library/SDK profile
-- [ ] Machine-readable skill catalog/version index when real catalog scale justifies it
-- [ ] Benchmark/reference-set framework when there are real scenarios to measure
+- [ ] Define a strict allowlisted capability model.
+- [ ] Implement consent/approval and auditable action lifecycle.
+- [ ] Build Windows adapter and tests.
+- [ ] Build Linux/WSL2 adapter and tests.
+- [ ] Add safe, cancellable desktop operations only after authorization gates pass.
+- [ ] Cross-platform integration and recovery testing.
 
-Generated repositories should adopt only modules appropriate to their stack, threat model, operating environment, and compliance needs.
+## P2 — Packaging and operations
+
+- [ ] Reproducible installer/build workflows.
+- [ ] Signed artifacts, provenance and SBOM.
+- [ ] Upgrade/uninstall/rollback and credential revocation verification.
+- [ ] Structured logs, health/readiness, alerting and incident response.
+- [ ] Verified release workflow and environment-specific acceptance.
+
+## P3 — ChatGPT/client integration
+
+- [ ] Identify supported ChatGPT MCP/connector configuration for the target account/product.
+- [ ] Register the connector using documented configuration.
+- [ ] Verify a real end-to-end tool invocation and permission boundary.
+- [ ] Document version/limitations only after verification.
+
+## Non-goals until security gates pass
+
+- Arbitrary shell execution.
+- Unrestricted file/process/service control.
+- Unattended remote control or screen capture.
+- Publicly exposing the local agent port.
+- Claims of deployment or production readiness without evidence.

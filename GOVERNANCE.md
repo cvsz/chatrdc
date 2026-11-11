@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document defines the default governance model for projects created from this template. Generated projects must replace generic ownership and decision guidance with their real maintainers, escalation paths, and operating model.
+This document defines change control, ownership, and release decision expectations for chatrdc. Repository-side security settings must be verified from GitHub's effective state, not inferred from committed files.
 
 ## Roles
 
@@ -16,10 +16,10 @@ This document defines the default governance model for projects created from thi
 Normal changes flow through pull requests with required checks and review. Repository administration controls should be verified with:
 
 ```bash
-python3 scripts/github_admin.py --repo OWNER/REPO --verify
+python3 scripts/github_admin.py --repo cvsz/chatrdc --verify
 ```
 
-A generated repository should not rely on documentation alone to prove that its branch protections or security settings are effective.
+A successful helper run counts as evidence only when it reads back effective provider settings. Do not infer that branch protections or security settings are active from documentation alone.
 
 ## Decisions
 

@@ -1,59 +1,22 @@
-# About cvsz
+# About chatrdc
 
-`cvsz` is a builder focused on AI-first software, developer platforms, automation, infrastructure, and production-oriented systems.
+Remote Desktop Commander is a security-first desktop management foundation for Windows and Linux/WSL2.
 
-## Focus areas
+## Product definition
 
-- AI coding tools and autonomous/agentic systems
-- AI application platforms and model/API integrations
-- developer platforms, APIs, SDKs, and internal tooling
-- platform engineering, infrastructure automation, CI/CD, and DevOps
-- security-aware architecture and repository hardening
-- workflow automation, bots, social, and commerce integrations
-- payment, wallet, ledger, and financial-system architecture
-- media, streaming, multimodal, speech, image, OCR, and search systems
-- gaming and interactive application infrastructure
-- OpenAPI tooling and service integration
+- **Problem:** provide a governed foundation for managing and observing authorized desktop devices through a local agent and MCP connector.
+- **Initial users:** authorized operators and developers managing their own or explicitly enrolled devices.
+- **Initial scope:** read-only local health and system summary, MCP diagnostics, and a local status UI.
+- **Explicit non-goals for the first increment:** arbitrary command execution, remote shell, file mutation, process/service control, screen capture, unattended remote control, public ingress, and production deployment.
+- **Connectivity:** loopback only until authenticated device enrollment and secure gateway controls are implemented and verified.
+- **Platforms:** Windows and Linux/WSL2 are the target matrix; support claims require per-platform test evidence.
+- **Success measures:** deterministic tests, least-privilege interfaces, auditable authorization, secure defaults, and reproducible installation.
 
-## Engineering philosophy
+## Maintainer and ownership
 
-Projects should aim to be:
+- Repository owner: [cvsz](https://github.com/cvsz)
+- Technical ownership and release approval: repository CODEOWNERS and GitHub rulesets; verify effective settings before release.
 
-- secure by default
-- automation-first
-- modular and reusable
-- easy to operate
-- observable
-- testable
-- documented
-- evidence-driven
-- friendly to incremental improvement
+## Readiness
 
-Security/quality failures should be fixed rather than bypassed. CI, infrastructure, documentation, recovery, repository controls, and operational readiness are treated as part of product engineering.
-
-## ztemplate direction
-
-The template is intended to give new repositories disciplined foundations from the first commit:
-
-- governance and ownership
-- security policy
-- protected change flow
-- CI/security automation
-- dependency maintenance
-- release/recovery guidance
-- architecture documentation
-- AI-agent operating contracts
-- evidence-state semantics
-- repository administration verification
-- safe rollout guidance for existing projects
-
-The template itself does not claim that generated applications are production ready. Application readiness remains evidence-based and stack/environment specific.
-
-## GitHub
-
-- Handle: `cvsz`
-- Repository namespace: `github.com/cvsz`
-
----
-
-This profile intentionally contains public-safe technical/project information only. Credentials, private account data, personal secrets, and sensitive identity information must not be added to a public repository template.
+This repository is under active implementation. Scaffold tests do not establish production readiness, secure remote access, or verified ChatGPT integration.

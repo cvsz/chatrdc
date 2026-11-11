@@ -1,55 +1,53 @@
 # Architecture
 
-## Purpose
+## Product boundary
 
-`ztemplate` is a language-agnostic repository foundation rather than an application runtime.
+chatrdc is a cross-platform desktop-management foundation. The first increment intentionally provides local, read-only diagnostics only. It is not yet a remote desktop transport or a production remote-management service.
 
-Its architecture is intentionally layered so generated projects can replace application-specific pieces without weakening repository governance.
+## Components
 
-## Layers
+### Local agent
 
-### Repository governance
+- FastAPI application in `agent/main.py`.
+- Health endpoint: `GET /health`.
+- Bounded host summary: `GET /api/v1/system`.
+- Local dashboard: `GET /`.
+- Intended listener: `127.0.0.1:8765`; forwarded-proxy header processing is disabled because the service has no trusted reverse proxy; never expose this port directly to LAN or public ingress.
 
-Root policy documents define ownership, contribution, security, evidence, and release expectations:
+The host summary includes OS/platform release, Python version, CPU count, and memory/disk capacity. It must not enumerate user documents, environment variables, command lines, or credentials. Agent responses disable caching and set baseline anti-sniffing, anti-framing, referrer, and browser feature-policy headers.
 
-- `AGENTS.md`
-- `ZEAZ-INTRODUCTION.md`
-- `GOVERNANCE.md`
-- `SECURITY.md`
-- `CONTRIBUTING.md`
+### MCP connector
 
-### GitHub control plane
+- `mcp_server/server.py` uses the official Python MCP SDK and stdio transport.
+- Tools: `get_agent_health` and `get_system_summary`.
+- The connector calls the loopback agent with a short timeout and bounded response size.
+- The MCP interface is read-only. No generic shell or file mutation tool is exposed.
 
-`.github/` provides CI/security/community baselines.
+### Management UI
 
-`scripts/github_admin.py` handles repository settings that cannot be enforced by committed files alone and verifies effective provider state after mutation.
+The dashboard is served by the local agent and displays health plus the bounded system summary. It is not an authenticated multi-user control plane and must remain local-only.
 
-### Validation
+## Trust boundaries
 
-`scripts/validate_repo.py` checks required template structure and local Markdown links.
+1. Local operator process → agent listener.
+2. MCP host → local stdio connector → loopback agent.
+3. Future operator identity/device enrollment → remote gateway → device agent.
 
-`tests/` validates bootstrap behavior.
+The third boundary is **not implemented**. Do not infer remote access from the presence of an MCP server or dashboard.
 
-Application-specific lint/test/build/security validation must be added by generated projects.
+## Planned layers
 
-### Project initialization
+1. **P0 — safe local foundation:** bounded read-only API, loopback-only launch path, tests and documentation.
+2. **P1 — identity and device enrollment:** revocable device credentials, operator authentication, authorization tests, and audit events.
+3. **P1 — secure remote connectivity:** gateway/tunnel integration, TLS, request authentication, rate limits, replay protections, and no direct agent ingress.
+4. **P2 — desktop capabilities:** individually allowlisted capabilities with explicit consent and independent security review; do not introduce arbitrary command execution.
+5. **P2 — platform packaging:** Windows and Linux/WSL2 install/service workflows, signing/provenance, upgrade and rollback tests.
+6. **P3 — ChatGPT integration:** validate the actual supported connector/client registration and end-to-end invocation before claiming integration.
 
-`scripts/bootstrap.py` changes project identity/ownership routing only. It does not create application architecture or deploy infrastructure.
+## Deployment and DNS ownership
 
-### AI/agent execution
-
-`docs/ai/`, `skills/`, `components.d/`, and `plugins.d/` provide reusable agent execution guidance and discovery without making application-runtime assumptions.
-
-### Application placeholders
-
-The root Dockerfile and application Makefile targets are intentionally non-production placeholders. Generated projects replace them with stack-specific implementations.
-
-## Existing-repository adoption
-
-The architecture is composable. Established repositories should use [repository rollout](repository-rollout.md) and port only compatible missing layers rather than copying the tree wholesale.
+No deployment or public hostname is configured by this repository. Follow [the Cloudflare/DNS ownership contract](cloudflare-terraform.md); do not create duplicate shared-tunnel or DNS ownership.
 
 ## Production boundary
 
-Repository-foundation readiness and application production readiness are separate claims.
-
-The template can verify repository controls, documentation structure, and baseline automation. A generated application must independently verify runtime architecture, deployment, data, recovery, observability, capacity, security, and incident-response gates that apply to it.
+Implementation, tests, deployment, remote access, and production readiness are separate claims. Each requires direct evidence for its exact scope and platform.

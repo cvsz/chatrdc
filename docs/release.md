@@ -1,46 +1,34 @@
 # Release
 
-## Scope
+## Current release status
 
-This template provides release guidance and release-note configuration. It does **not** provide a generic artifact-publishing workflow because publishing credentials, registries, signing, environments, and approval policy are project-specific.
+chatrdc is an implementation scaffold. No production release, signed installer, public endpoint, or remote-access capability is claimed.
 
-## Versioning
+## Release gates
 
-Use an explicit versioning policy. Semantic Versioning is recommended for reusable software unless the project defines a better scheme.
+1. Confirm the exact release commit and required GitHub checks.
+2. Verify repository administration controls by provider read-back.
+3. Pass lint, tests, build, dependency/security checks, and platform-specific acceptance.
+4. Review the threat model, authentication/authorization, audit, data exposure, and dependency supply chain.
+5. Verify Windows and Linux/WSL2 packaging and clean-install/upgrade behavior.
+6. Sign installers and establish artifact provenance before distributing binaries.
+7. Verify configuration, key rotation, incident response, backup/recovery, and rollback where applicable.
+8. Publish only through a trusted, protected release workflow.
+9. Verify the published artifact and installation on a clean target environment.
+10. Record residual risks separately; accepted risk does not convert an unverified gate into a verified one.
 
-## Release checklist
+## Remote-access gate
 
-1. Confirm the release commit is the intended exact head.
-2. Ensure required CI/security checks pass on that exact head.
-3. Confirm protected-branch/admin controls are effective.
-4. Update `CHANGELOG.md` and compatibility/migration notes.
-5. Verify deployment and rollback procedures.
-6. Verify migrations and data rollback/forward strategy when applicable.
-7. Verify required backup/restore evidence for stateful systems.
-8. Create/push the release tag according to project policy.
-9. Publish artifacts only from trusted workflows/environments.
-10. Generate provenance/signing/attestation where required.
-11. Verify the published artifact and deployed environment.
-12. Record release evidence and remaining known risk separately.
-
-## Production readiness
-
-Release authorization and production readiness are distinct.
-
-A maintainer may authorize a release with accepted risk, but accepted risk does not convert `PARTIALLY VERIFIED`, `UNVERIFIED`, or `BLOCKED` readiness gates into `VERIFIED`.
-
-Use the canonical evidence definitions in `../ZEAZ-INTRODUCTION.md`.
+Do not enable LAN or Internet access until the mandatory controls in [SECURITY.md](../SECURITY.md) are implemented, tested, and independently reviewed. The local agent port must never be exposed directly.
 
 ## Rollback
 
 Document and test, as appropriate:
 
-- last known-good artifact/build
-- application rollback
-- safe database/data migration handling
-- configuration rollback
-- credential/artifact invalidation after compromise
-- traffic/routing rollback
+- last known-good artifact and version
+- application/configuration rollback
+- credential/device revocation after compromise
+- removal of exposed ingress/routes
 - operator and stakeholder communication
 
-A rollback document without environment-appropriate execution evidence is not proof that recovery will work.
+A written rollback plan without environment-appropriate execution evidence is not proof that recovery works.
